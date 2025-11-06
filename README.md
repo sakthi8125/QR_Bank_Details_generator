@@ -1,0 +1,1 @@
+# QR_Bank_Details_generator
