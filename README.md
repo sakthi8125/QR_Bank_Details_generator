@@ -1,172 +1,166 @@
-
-# 💳 Password-Protected UPI Scratch Card Money Transfer System
+# 💳 QR Bank Details Generator (Password-Protected QR Sharing)
 
 ### 🏦 Project Title
-**Password-Protected UPI Scratch Card Money Transfer System**
+**QR Bank Details Generator — generate and share password-protected QR images containing bank/UPI details**
 
 ---
 
 ## 🧾 Overview
 
-This project introduces a **secure, digital money transfer mechanism** inspired by **UPI scratch cards**.  
-It allows users to generate **password-protected QR codes** that contain bank or UPI details, making digital transactions **safe, private, and easily shareable** through email, WhatsApp, or other platforms.
+This project collects **bank or UPI details**, generates a **QR code** image containing those details, and then places the QR image inside a **password-protected ZIP** so it can be shared securely (via WhatsApp, Email, Drive, etc.).  
+It **does not** perform any money transfer. It only **encodes and protects** the recipient's bank/UPI details as a QR image for sharing.
 
-The QR code is encrypted inside a ZIP file that can be accessed only with a password — ensuring secure redemption by authorized users.
+> ⚙️ This project is a backend Python utility. It runs locally — GitHub will only host the code and docs.
 
 ---
 
 ## 🎯 Objectives
 
-- Provide a **password-protected** method for UPI-based transactions.  
-- Enable **secure sharing** of QR-based digital scratch cards.  
-- Protect user bank information using encryption.  
-- Allow redemption of QR through secure password validation.  
-- Ensure compatibility across **mobile and desktop devices**.
+- Collect and encode bank / UPI details as a QR image.  
+- Protect the QR image by storing it in a password-protected ZIP file.  
+- Make the QR easy to share while ensuring only the intended recipient (who has the password) can open it.
 
 ---
-
-## ⚙️ Features
-
-✅ Generate UPI/Bank QR code  
-✅ Create password-protected ZIP files  
-✅ Secure password handling with `getpass`  
-✅ Redeem QR only with valid password  
-✅ Shareable via WhatsApp, Email, or Cloud  
-✅ Platform-independent (works on any OS)
-
----
-
-## 🧠 System Workflow
-
-```
-
-    ┌───────────────────────────────┐
-    │    User enters bank details   │
-    └──────────────┬────────────────┘
-                   │
-                   ▼
-        ┌────────────────────┐
-        │ Generate QR code   │
-        └─────────┬──────────┘
-                  │
-                  ▼
-      ┌──────────────────────────┐
-      │ Create ZIP (with password)│
-      └───────────┬──────────────┘
-                  │
-                  ▼
-    ┌────────────────────────────┐
-    │ Share QR ZIP file securely │
-    └──────────┬─────────────────┘
-               │
-               ▼
-     ┌────────────────────────────┐
-     │  Redeem using password     │
-     │  and scan QR code          │
-     └────────────────────────────┘
-```
-
-````
 
 ## 🧩 Technologies Used
 
 | Category | Technology / Library | Purpose |
-|-----------|----------------------|----------|
-| **Programming Language** | Python 3.8+ | Core development |
-| **QR Code Generation** | `qrcode` | Create QR image for bank/UPI details |
-| **Image Processing** | `Pillow (PIL)` | Handle and save QR images |
-| **File Encryption** | `zipfile` | Create password-protected ZIP files |
-| **Secure Input** | `getpass` | Hide password while typing |
-| **File Management** | `os`, `shutil` | Manage local files and directories |
+|----------|----------------------|---------|
+| Programming Language | Python 3.8+ | Core logic |
+| QR Code Generation | `qrcode` | Create QR image from data |
+| Image Handling | `Pillow` | Save/handle QR images |
+| Packaging | `zipfile` (stdlib) | Create password-protected ZIP |
+| Secure Input | `getpass` | Securely read password input |
 
 ---
 
-## 💻 Code Example
+## ⚙️ How It Works (Simple Flow)
 
-```python
-import qrcode
-import zipfile
-import getpass
+1. **User enters bank/UPI details** (name, bank, account number, IFSC, UPI ID).  
+2. The app **combines these fields** into a text payload.  
+3. The payload is **encoded into a QR image** (`bank_qr.png`) using `qrcode`.  
+4. The QR image is **zipped and password-protected** (`secure_qr.zip`).  
+5. You can **share** `secure_qr.zip` and the recipient must provide the **password** to extract and scan the QR.
 
-# Step 1: Get user details
-name = input("Enter Account Holder Name: ")
-bank = input("Enter Bank Name: ")
-acc_no = input("Enter Account Number: ")
-ifsc = input("Enter IFSC Code: ")
-upi_id = input("Enter UPI ID: ")
+---
 
-# Step 2: Create QR data
-data = f"Name: {name}\nBank: {bank}\nAccount: {acc_no}\nIFSC: {ifsc}\nUPI: {upi_id}"
+## 🗂 Project Structure
 
-# Step 3: Generate QR
-qr = qrcode.make(data)
-qr_filename = "bank_qr.png"
-qr.save(qr_filename)
+```
 
-# Step 4: Create password-protected ZIP
-zip_filename = "secure_qr.zip"
-password = getpass.getpass("Set Password for ZIP: ")
+QR_Bank_Details_generator/
+│
+├── generate_qr.py       # Main script to collect details and create password-protected ZIP
+├── redeem_qr.py         # (Optional) Helper to extract zip and open/preview QR image
+├── requirements.txt     # Python dependencies
+├── README.md
+└── outputs/             # (auto) contains generated bank_qr.png and secure_qr.zip
 
-with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zf:
-    zf.setpassword(password.encode())
-    zf.write(qr_filename)
-
-print("✅ QR code generated and secured successfully!")
 ````
 
 ---
 
-## 🔐 Security Concept
+## 💻 How to Run Locally
 
-* The QR file is encrypted using a **password-based ZIP compression**.
-* Prevents unauthorized users from viewing or redeeming the QR.
-* The password is handled securely using the `getpass` module (not visible on screen).
-* Files can be shared through any medium — Email, WhatsApp, or Cloud Storage.
+### Prerequisites
+- Python 3.8 or later
+- `pip`
+
+### 1) Clone the repository
+```bash
+git clone https://github.com/sakthi8125/QR_Bank_Details_generator.git
+cd QR_Bank_Details_generator
+````
+
+### 2) Install dependencies
+
+Create `requirements.txt` (see exact contents below) and run:
+
+```bash
+pip install -r requirements.txt
+```
+
+If you prefer manual install:
+
+```bash
+pip install qrcode Pillow
+```
+
+### 3) Run the generator
+
+```bash
+python generate_qr.py
+```
+
+Follow the prompts:
+
+* Enter Account Holder Name
+* Enter Bank Name
+* Enter Account Number
+* Enter IFSC Code
+* Enter UPI ID (optional)
+* Set a password for the ZIP (input hidden)
+
+Output files will be created in the repository root or `outputs/` folder:
+
+* `bank_qr.png` — the generated QR image
+* `secure_qr.zip` — password-protected ZIP containing the QR
+
+### 4) Redeem / extract (Receiver)
+
+To extract the QR (receiver):
+
+* Use any ZIP tool that supports password entry (e.g., Windows Explorer, 7-Zip, macOS Archive Utility, or `unzip` on Linux).
+* Provide the password the sender shared.
+* Open the `bank_qr.png` in any QR scanner or UPI app to view/copy the details.
 
 ---
 
-## 🧰 Future Enhancements
+## 🔐 Security Notes & Limitations
 
-🚀 Add login system with database (SQLite or Firebase)
-🚀 Integrate OTP or expiry time for QR redemption
-🚀 Build GUI using **Tkinter** or **Flask**
-🚀 Enable direct mobile camera scanning
-🚀 Connect with mock UPI API for live transactions
+* The ZIP password protection uses Python's `zipfile` interface; compatibility for password handling may vary across ZIP tools. For stronger cross-platform encryption consider using `pyminizip` or other encryption libraries in a future update.
+* The project does **not** transmit money nor connect to any banking networks. It only encodes and packages data locally.
+* Never store real bank credentials in public repositories. Use test/dummy data for demos.
 
 ---
 
-## 📂 Project Structure
+## 🧩 File Descriptions
+
+* `generate_qr.py` — interactive script to capture bank details, generate the QR image, and create a password-protected ZIP.
+* `redeem_qr.py` — optional helper script to prompt for a password and extract the QR for preview (useful for demos).
+* `requirements.txt` — lists Python libraries needed.
+* `README.md` — this document.
+
+---
+
+## ✅ Example `requirements.txt`
 
 ```
-Bank-QR-Generator/
-│
-├── generate_qr.py
-├── encrypt_zip.py
-├── redeem_qr.py
-├── requirements.txt
-├── README.md
-└── outputs/
-    ├── bank_qr.png
-    └── secure_qr.zip
+qrcode
+Pillow
 ```
+
+(Optionally pin versions if you want reproducible installs, e.g. `qrcode==7.3`)
 
 ---
 
 ## 📸 Screenshots
 
-> Add these screenshots after running your project:
+* `screenshots/generator_prompt.png` — show terminal prompts and sample input
+* `screenshots/bank_qr.png` — the generated QR image
+* `screenshots/secure_qr_zip.png` — the produced ZIP file in file explorer
 
-* **QR Generation Screen**
-* **Password Entry**
-* **ZIP File Output**
-* **QR Redeem Process**
+Add images to `/screenshots/` and reference them in the README with markdown:
+
+```markdown
+![Generator Prompt](screenshots/generator_prompt.png)
+```
 
 ---
 
 ## 🧑‍💻 Author
 
-**Developed by:**
-🎓 *Sakthidevi*
+**Sakthidevi**
 Final Year – B.Sc. Computer Science with AI
 Sathyabama Institute of Science and Technology
 
@@ -174,18 +168,25 @@ Sathyabama Institute of Science and Technology
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
-You are free to use, modify, and distribute it for educational or research purposes.
+This project is released under the **MIT License**. See [LICENSE](./LICENSE) for details.
 
 ---
 
-## 🌐 Tags
+## 📫 Contact / Contributions
 
-`#python` `#fintech` `#qr-code` `#banking` `#encryption` `#upi` `#security` `#studentproject`
+If you want to suggest improvements or report issues:
+
+* Use **Issues** in this repository (I added templates for Bug / Feature / General).
+* Pull requests welcome — please follow the contribution template (if added).
 
 ```
 
 ---
 
-Would you like me to also create the **`requirements.txt`** (to include dependencies like `qrcode` and `pillow`) so your GitHub project runs smoothly when others clone it?
+If you want, I can:
+- produce `generate_qr.py` and `redeem_qr.py` example scripts (complete, ready-to-run), or  
+- create a `LICENSE` file text and `requirements.txt` file content ready for copy-paste, or  
+- generate the exact `screenshots/` README section with sample image markup.
+
+Which of those should I produce next?
 ```
